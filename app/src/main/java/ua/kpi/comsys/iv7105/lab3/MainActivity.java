@@ -4,11 +4,16 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -87,18 +92,29 @@ public class MainActivity extends AppCompatActivity {
 
         List<String> moviesRepr = new LinkedList<>();
         for (Movie m : movies) {
-            moviesRepr.add(m.toString());
+            moviesRepr.add(m.shortInfo());
         }
 
         final ListView listView = findViewById(R.id.list_view_id);
         final StableArrayAdapter adapter = new StableArrayAdapter(this,
                 android.R.layout.simple_list_item_1, moviesRepr);
         listView.setAdapter(adapter);
+        final Context c= getApplicationContext();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(c, MoveDetail.class);
+                Bundle b = new Bundle();
+                b.putString("text", ((TextView)view).getText().toString());
+                i.putExtras(b);
+                startActivity(i);
+            }
+        });
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
 
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> mIdMap = new HashMap<>();
 
         public StableArrayAdapter(Context context, int textViewResourceId,
                                   List<String> objects) {
